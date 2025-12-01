@@ -1,0 +1,85 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+export function AppHeader() {
+  const pathname = usePathname();
+
+  // Remove empty segments → ["dashboard", "products", "123"]
+  const segments = pathname
+    .split("/")
+    .filter((seg) => seg.length > 0);
+
+  // Helper: capitalize
+  const format = (text: string) =>
+    text.charAt(0).toUpperCase() + text.slice(1);
+
+  return (
+    <header className="sticky top-0 z-50 bg-background flex h-16 items-center justify-between px-4 gap-2 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)]">
+
+      {/* LEFT */}
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mr-2 data-[orientation=vertical]:h-4"
+        />
+
+        <Breadcrumb>
+          <BreadcrumbList>
+
+            {/* If no path → show Home */}
+            {segments.length === 0 && (
+              <BreadcrumbItem>
+                <BreadcrumbPage>Home</BreadcrumbPage>
+              </BreadcrumbItem>
+            )}
+
+            {/* Dynamic breadcrumb generation */}
+            {segments.map((seg, index) => {
+              const href =
+                "/" + segments.slice(0, index + 1).join("/");
+
+              const isLast = index === segments.length - 1;
+
+              return (
+                <BreadcrumbItem key={href}>
+
+                  {!isLast ? (
+                    <BreadcrumbLink href={href}>
+                      {format(seg)}
+                    </BreadcrumbLink>
+                  ) : (
+                    <BreadcrumbPage>
+                      {format(seg)}
+                    </BreadcrumbPage>
+                  )}
+
+                  {!isLast && (
+                    <BreadcrumbSeparator />
+                  )}
+                </BreadcrumbItem>
+              );
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
+      {/* RIGHT */}
+      <div className="flex items-center gap-2">
+        <ModeToggle />
+      </div>
+    </header>
+  );
+}
