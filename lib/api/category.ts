@@ -1,36 +1,30 @@
-import {CreateCategoryValues} from "../validators/category-schema";
-
-const API = process.env.NEXT_PUBLIC_BASE_API_URL;
+import { HttpClient } from '@/lib/api-client';
+import { CreateCategoryValues } from '../validators/category-schema';
 
 export const CategoryAPI = {
-    filter: async (pageIndex: number, pageSize: number, search?: string) => {
-        const res = await fetch(`${API}/api/v1/categories?isPaged=true&page=${pageIndex}&pageSize=${pageSize}&filter=${search}`);
-        return res.json();
-    },
+  filter: async (pageIndex: number, pageSize: number, search?: string) => {
+    return HttpClient.fetchWithAuth(
+      `api/admin/v1/categories?isPaged=true&page=${pageIndex}&pageSize=${pageSize}&filter=${search || ''}`
+    );
+  },
 
-    getAll: async () => {
-        const res = await fetch(`${API}/api/v1/categories?isPaged=false&sortBy=name&sortDirection=ASC`);
-        return res.json();
-    },
+  getAll: async () => {
+    return HttpClient.fetchWithAuth(
+      `api/admin/v1/categories?isPaged=false&sortBy=name&sortDirection=ASC`
+    );
+  },
 
-    create: async (data: CreateCategoryValues) => {
-        const res = await fetch(`${API}/api/v1/categories`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(data),
-        });
+  create: async (data: CreateCategoryValues) => {
+    return HttpClient.fetchWithAuth(`api/admin/v1/categories`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
 
-        if (!res.ok) throw new Error("Create failed");
-        return res.json();
-    },
-
-    update: async (id: number, body: object) => {
-        const res = await fetch(`${API}/api/v1/categories/${id}`, {
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body),
-        });
-
-        return res.json();
-    },
+  update: async (id: number, body: object) => {
+    return HttpClient.fetchWithAuth(`api/admin/v1/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  },
 };

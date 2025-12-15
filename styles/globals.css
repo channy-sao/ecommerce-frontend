@@ -18,13 +18,14 @@ body {
 }
 
 #nprogress .peg {
-  box-shadow: 0 0 10px #3b82f6, 0 0 5px #3b82f6;
+  box-shadow:
+    0 0 10px #3b82f6,
+    0 0 5px #3b82f6;
 }
 
 #nprogress .spinner {
   display: none; /* hide spinner if you want only bar */
 }
-
 
 @layer base {
   :root {
