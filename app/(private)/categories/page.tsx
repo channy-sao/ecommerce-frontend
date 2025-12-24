@@ -2,7 +2,7 @@
 
 import { CreateCategoryDialog } from "@/components/category/create-category-dialog";
 import { useQuery } from "@tanstack/react-query";
-import { CategoryAPI } from "@/lib/api/category";
+import { CATEGORIES_QUERY_KEY, CategoryAPI } from '@/lib/api/category';
 import {
   CategoryResponse,
   CategoryListResponse,
@@ -20,7 +20,7 @@ export default function CategoryPage() {
   const debouncedSearch = useDebounce(search, 1000);
 
   const { data } = useQuery<CategoryListResponse>({
-    queryKey: ["categories", pageIndex, pageSize, debouncedSearch],
+    queryKey: [CATEGORIES_QUERY_KEY, pageIndex, pageSize, debouncedSearch],
     queryFn: () => CategoryAPI.filter(pageIndex + 1, pageSize, debouncedSearch), // in backend page start from 1
   });
 

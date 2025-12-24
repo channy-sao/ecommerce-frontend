@@ -28,3 +28,6 @@ export const CategoryAPI = {
     });
   },
 };
+
+
+export const CATEGORIES_QUERY_KEY = 'categories';

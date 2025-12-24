@@ -5,9 +5,10 @@ import { columns } from '@/app/(private)/products/column';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ProductListResponse, ProductResponse } from '@/lib/types/product-response';
-import { ProductApi } from '@/lib/api/product';
+import { ProductApi, PRODUCTS_QUERY_KEY } from '@/lib/api/product';
 import { CreateProductDialog } from '@/components/product/create-product-dialog';
 import { useDebounce } from '@/hooks/use-debounce';
+import { toast } from 'sonner';
 
 export default function ProductPage() {
   const [pageIndex, setPageIndex] = useState(0); // 0-based
@@ -17,13 +18,17 @@ export default function ProductPage() {
   const debouncedSearch = useDebounce(search, 1000);
 
   const { data } = useQuery<ProductListResponse>({
-    queryKey: ['products', pageIndex, pageSize, debouncedSearch],
+    queryKey: [PRODUCTS_QUERY_KEY, pageIndex, pageSize, debouncedSearch],
     queryFn: () => ProductApi.filter(pageIndex + 1, pageSize, debouncedSearch), // in backend page start from 1
+    // Option 2: Retry logic
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
+
   const products: ProductResponse[] = data?.data || [];
-  const totalPages = data?.meta.totalPage || 1;
-  const totalRecords = data?.meta.totalCount || 0; // Add this line
+  const totalPages = data?.meta?.totalPage || 1;
+  const totalRecords = data?.meta?.totalCount || 0; // Add this line
 
   return (
     <div className="p-6 space-y-2 bg-card rounded-2xl border-gray-200 border dark:border-gray-800 border-[0.3px]">

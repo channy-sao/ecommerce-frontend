@@ -1,86 +1,91 @@
-"use client";
+'use client';
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { ProductApi } from "@/lib/api/product";
-import {
-  createProductSchema,
-  CreateProductSchema,
-} from "@/lib/validators/product-schema";
-import { CategoryAPI } from "@/lib/api/category";
-import { CategoryResponse } from "@/lib/types/category-response";
-import { useState } from "react";
-import { ImageUpload } from "@/components/ui/image-upload";
-import { Switch } from "@/components/ui/switch";
+import { ProductApi, PRODUCTS_QUERY_KEY } from '@/lib/api/product';
+import { createProductSchema, CreateProductSchema } from '@/lib/validators/product-schema';
+import { CATEGORIES_QUERY_KEY, CategoryAPI } from '@/lib/api/category';
+import { CategoryResponse } from '@/lib/types/category-response';
+import { useState } from 'react';
+import { ImageUpload } from '@/components/ui/image-upload';
+import { Switch } from '@/components/ui/switch';
+import { Sparkles } from 'lucide-react';
+import { BaseResponse } from '@/lib/types/base-response';
+import { ProductResponse } from '@/lib/types/product-response';
 
 export function CreateProductDialog() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
   const { data: categories } = useQuery({
-    queryKey: ["categories"],
+    queryKey: [CATEGORIES_QUERY_KEY],
     queryFn: CategoryAPI.getAll,
   });
 
   // Create mutation for creating products
   const createProductMutation = useMutation({
     mutationFn: ProductApi.createProduct,
-    onSuccess: () => {
+    onSuccess: (data: BaseResponse<ProductResponse>) => {
       // Invalidate and refetch products queries
-      void queryClient.invalidateQueries({ queryKey: ["products"] });
-      setOpen(false); // closing dialog after saved
-      toast.success("Product created successfully");
-      form.reset();
+      if (data.success) {
+        void queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY] });
+        setOpen(false); // closing dialog after saved
+        toast.success('Product created successfully');
+        form.reset();
+      } else {
+        toast.error(data.status.message);
+        return;
+      }
     },
     onError: (error) => {
-      toast.error("Failed to create products");
-      console.error("Create products error:", error);
+      toast.error('Failed to create products');
+      console.error('Create products error:', error);
     },
   });
 
   const form = useForm<CreateProductSchema>({
     resolver: zodResolver(createProductSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      price: "0",
-      categoryId: "",
+      name: '',
+      description: '',
+      price: '0',
+      categoryId: '',
       isFeature: false, //matches boolean exactly
       image: undefined, // Single image, not array
     },
@@ -99,7 +104,10 @@ export function CreateProductDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant={'custom'}>Create Product</Button>
+        <Button variant={'custom'}>
+          <Sparkles className="h-4 w-4" />
+          Create Product
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
@@ -158,9 +166,7 @@ export function CreateProductDialog() {
                       maxSize={5 * 1024 * 1024} // 5MB
                     />
                   </FormControl>
-                  <FormDescription>
-                    Upload one product image. Max file size: 5MB.
-                  </FormDescription>
+                  <FormDescription>Upload one product image. Max file size: 5MB.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -174,10 +180,7 @@ export function CreateProductDialog() {
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
@@ -204,15 +207,11 @@ export function CreateProductDialog() {
                   <div className="space-y-0.5">
                     <FormLabel>Featured Product</FormLabel>
                     <FormDescription>
-                      Mark this product as featured to highlight it on the
-                      homepage
+                      Mark this product as featured to highlight it on the homepage
                     </FormDescription>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
@@ -240,7 +239,7 @@ export function CreateProductDialog() {
                 </Button>
               </DialogClose>
               <Button variant={'custom'} type="submit" disabled={createProductMutation.isPending}>
-                {createProductMutation.isPending ? "Creating..." : "Create"}
+                {createProductMutation.isPending ? 'Creating...' : 'Create'}
               </Button>
             </DialogFooter>
           </form>

@@ -28,6 +28,7 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, signOut } = useAuthentication();
   const router = useRouter();
+  console.log("user", user);
 
   const handleLogout = async () => {
     await signOut();

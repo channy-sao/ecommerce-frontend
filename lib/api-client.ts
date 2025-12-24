@@ -1,27 +1,64 @@
-
-import { getAccessToken } from "@/lib/utils/cookies";
+import { getAccessToken } from '@/lib/utils/cookies';
+import { refreshAccessToken } from '@/lib/utils/refresh';
 
 class ApiClient {
-  async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-    const token = await getAccessToken(); // your cookie utility
-    console.log("Token", token);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  async fetchWithAuth(
+    endpoint: string,
+    options: RequestInit = {},
+    retry = true
+  ) {
+    const token = await getAccessToken();
+    const isFormData = options.body instanceof FormData;
+
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     const res = await fetch(`/api/proxy/${endpoint}`, {
       ...options,
-      headers: {
-        ...(options.headers || {}),
-        Authorization: token ? `Bearer ${token}` : "",
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
+      headers,
+      cache: 'no-store',
     });
 
-    if (!res.ok) {
-      const message = await res.text();
-      throw new Error(message);
+    // 🔁 AUTO REFRESH ON 401
+    if (res.status === 401 && retry) {
+      const refreshed = await refreshAccessToken();
+
+      if (refreshed) {
+        // Retry original request ONCE
+        return this.fetchWithAuth(endpoint, options, false);
+      }
+
+      // Refresh failed → logout required
+      throw {
+        status: 401,
+        message: 'Session expired',
+      };
     }
 
-    return res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error('Invalid server response');
+    }
+
+    // Only throw for REAL system failures
+    if (!res.ok && res.status >= 500) {
+      throw {
+        status: res.status,
+        message: data?.status?.message || 'Server error',
+      };
+    }
+
+    return data;
   }
 }
 

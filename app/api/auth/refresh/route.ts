@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRefreshToken } from '@/lib/utils/cookies';
+import { getInitialUser, getRefreshToken } from '@/lib/utils/cookies';
 import { buildErrorResponse } from '@/lib/types/error-response';
 import { RefreshTokenResponse } from '@/lib/types/auth';
 import { AUTH_ERRORS, COOKIE_KEYS } from '@/lib/constants/auth-constant';
 import { BaseResponse } from '@/lib/types/base-response';
-
 export async function POST(req: NextRequest) {
   const refreshToken = await getRefreshToken();
 
@@ -31,6 +30,12 @@ export async function POST(req: NextRequest) {
     maxAge: data.data?.accessTokenExpireInMs / 1000,
   });
   res.cookies.set(COOKIE_KEYS.REFRESH_TOKEN, data.data?.refreshToken, {
+    httpOnly: true,
+    path: '/',
+    maxAge: data.data?.refreshTokenExpireInMs / 1000,
+  });
+
+  res.cookies.set('user_info', JSON.stringify(await getInitialUser()), {
     httpOnly: true,
     path: '/',
     maxAge: data.data?.refreshTokenExpireInMs / 1000,

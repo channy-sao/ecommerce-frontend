@@ -1,7 +1,8 @@
 'use client';
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import { AuthContextType, LoginResponse, UserResponse } from '@/lib/types/auth';
+import { AuthContextType, LoginResponse } from '@/lib/types/auth';
 import { BaseResponse } from '@/lib/types/base-response';
+import { UserResponse } from '@/lib/types/user';
 
 export const USER_INFO_KEY = 'user_info';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

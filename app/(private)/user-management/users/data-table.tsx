@@ -54,19 +54,19 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
-  columns,
-  data,
-  pageIndex,
-  pageSize,
-  pageCount,
-  // Add hiddenColumns prop to specify which columns should be hidden by default
-  hiddenColumns = [],
-  totalRecord,
-  search,
-  onSearchChange,
-  setPageIndex,
-  setPageSize,
-}: DataTableProps<TData, TValue>) {
+                                           columns,
+                                           data,
+                                           pageIndex,
+                                           pageSize,
+                                           pageCount,
+                                           // Add hiddenColumns prop to specify which columns should be hidden by default
+                                           hiddenColumns = [],
+                                           totalRecord,
+                                           search,
+                                           onSearchChange,
+                                           setPageIndex,
+                                           setPageSize,
+                                         }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -175,9 +175,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}

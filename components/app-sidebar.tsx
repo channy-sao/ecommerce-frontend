@@ -80,12 +80,12 @@ const data = {
       icon: ShieldUser,
       items: [
         {
-          title: 'Genesis',
-          url: '#',
+          title: 'Users',
+          url: 'user-management/users',
         },
         {
-          title: 'Explorer',
-          url: '#',
+          title: 'Roles',
+          url: 'user-management/roles',
         },
         {
           title: 'Quantum',

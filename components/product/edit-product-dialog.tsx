@@ -31,8 +31,8 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-import { ProductApi } from "@/lib/api/product";
-import { CategoryAPI } from "@/lib/api/category";
+import { ProductApi, PRODUCTS_QUERY_KEY } from '@/lib/api/product';
+import { CATEGORIES_QUERY_KEY, CategoryAPI } from '@/lib/api/category';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProductSchema,
@@ -58,7 +58,7 @@ export function EditProductDialog({
   const queryClient = useQueryClient();
 
   const { data: categories } = useQuery({
-    queryKey: ["categories"],
+    queryKey: [CATEGORIES_QUERY_KEY],
     queryFn: () => CategoryAPI.getAll(),
   });
 
@@ -96,7 +96,7 @@ export function EditProductDialog({
     onSuccess: () => {
       toast.success("Product updated successfully.");
       form.reset(); // will reset to defaultValues (if you want to reset to products again call reset with products)
-      void queryClient.invalidateQueries({ queryKey: ["products"] });
+      void queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY] });
       onOpenChange(false);
     },
     onError: () => {

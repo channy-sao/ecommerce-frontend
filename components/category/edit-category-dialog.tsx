@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { CategoryAPI } from "@/lib/api/category";
+import { CATEGORIES_QUERY_KEY, CategoryAPI } from '@/lib/api/category';
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCategorySchema } from "@/lib/validators/category-schema";
@@ -56,7 +56,7 @@ export function EditCategoryDialog({
     onSuccess: () => {
       toast.success("CategoryResponse updated successfully.");
       form.reset();
-      void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
       onOpenChange(false);
     },
     onError: () => {

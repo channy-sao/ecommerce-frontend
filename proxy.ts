@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COOKIE_KEYS } from '@/lib/constants/auth-constant';
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const path = url.pathname;
 
@@ -73,5 +73,14 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/login', '/dashboard/:path*', '/profile/:path*', '/maintenance'],
+  matcher: [
+    '/',
+    '/login',
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/user-management/:path*',
+    // '/roles/:path*',
+    '/categories/:path*', // ⭐ CRITICAL: Add this!
+    '/maintenance',
+  ],
 };

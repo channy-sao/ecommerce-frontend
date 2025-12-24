@@ -3,26 +3,30 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
-import { X, Upload, FileImage } from "lucide-react";
+import { X, Upload, FileImage, CheckCircle, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
 interface ImageUploadProps {
-  // value: undefined => keep existing, null => explicitly removed, File => new upload
   value?: File | null | undefined;
   onChange: (file: File | null | undefined) => void;
   existingImageUrl?: string | null;
   maxSize?: number;
   disabled?: boolean;
+  label?: string;
+  description?: string;
 }
 
 export function ImageUpload({
-  value = undefined,
-  onChange,
-  existingImageUrl = null,
-  maxSize = 5 * 1024 * 1024,
-  disabled = false,
-}: ImageUploadProps) {
+                              value = undefined,
+                              onChange,
+                              existingImageUrl = null,
+                              maxSize = 5 * 1024 * 1024,
+                              disabled = false,
+                              label = "Product Image",
+                              description = "Upload a high-quality image for your product",
+                            }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   // When value changes to a File, create preview URL
   useEffect(() => {
@@ -45,20 +49,30 @@ export function ImageUpload({
   // Derived flags
   const hasNewFile = value instanceof File;
   const hasRemovedFile = value === null;
-  const hasNoChange = value === undefined && !!existingImageUrl; // leave existing
+  const hasNoChange = value === undefined && !!existingImageUrl;
   const showExistingImage = hasNoChange && existingImageUrl;
   const showNewFile = hasNewFile && !!preview;
-  // const showPlaceholder = hasRemovedFile || (!existingImageUrl && !hasNewFile);
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    (acceptedFiles: File[], rejectedFiles: any[]) => {
+      setError("");
+
+      if (rejectedFiles.length > 0) {
+        const rejection = rejectedFiles[0];
+        if (rejection.errors[0]?.code === "file-too-large") {
+          setError(`File is too large. Maximum size is ${maxSize / 1024 / 1024}MB`);
+        } else {
+          setError(rejection.errors[0]?.message || "Invalid file type");
+        }
+        return;
+      }
+
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
-        onChange(file); // File -> new upload
-        // preview will be created by effect above when `value` is File.
+        onChange(file);
       }
     },
-    [onChange],
+    [onChange, maxSize],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -71,7 +85,7 @@ export function ImageUpload({
   });
 
   const removeFile = () => {
-    // Explicit removal: set to null
+    setError("");
     onChange(null);
   };
 
@@ -83,16 +97,28 @@ export function ImageUpload({
       : "";
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg bg-white">
+    <div className="space-y-4">
+      <div className="space-y-1">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </label>
+        {description && (
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {description}
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+        {/* Image Preview Area */}
         <div className="flex-shrink-0">
           {showNewFile ? (
-            <div className="relative">
-              <div className="w-16 h-16 rounded border border-gray-200 overflow-hidden bg-gray-50">
+            <div className="relative group">
+              <div className="w-20 h-20 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-50 dark:bg-gray-900">
                 <Image
                   src={imageSrc}
-                  width={64}
-                  height={64}
+                  width={80}
+                  height={80}
                   alt="New upload"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -102,21 +128,23 @@ export function ImageUpload({
                   }}
                 />
               </div>
-              <button
-                type="button"
-                onClick={removeFile}
-                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
-                aria-label="Remove image"
-              >
-                <X className="h-3 w-3" />
-              </button>
-              <div className="absolute bottom-1 left-1 bg-blue-600 text-white text-xs px-1 rounded text-[10px]">
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={removeFile}
+                  className="text-white hover:text-red-300 transition-colors p-2"
+                  aria-label="Remove image"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="absolute top-2 left-2 bg-blue-600 dark:bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
                 New
               </div>
             </div>
           ) : showExistingImage ? (
-            <div className="relative">
-              <div className="w-16 h-16 rounded border border-gray-200 overflow-hidden bg-gray-50">
+            <div className="relative group">
+              <div className="w-20 h-20 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-50 dark:bg-gray-900">
                 <img
                   src={imageSrc}
                   alt="Current product"
@@ -128,92 +156,136 @@ export function ImageUpload({
                   }}
                 />
               </div>
-              <button
-                type="button"
-                onClick={removeFile}
-                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
-                aria-label="Remove image"
-              >
-                <X className="h-3 w-3" />
-              </button>
-              <div className="absolute bottom-1 left-1 bg-gray-600 text-white text-xs px-1 rounded text-[10px]">
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={removeFile}
+                  className="text-white hover:text-red-300 transition-colors p-2"
+                  aria-label="Remove image"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="absolute top-2 left-2 bg-gray-600 dark:bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">
                 Current
               </div>
             </div>
           ) : (
             <div
-              className={`w-16 h-16 rounded border-2 border-dashed flex items-center justify-center ${
+              className={`w-20 h-20 rounded-lg border-2 border-dashed flex items-center justify-center transition-colors ${
                 hasRemovedFile
-                  ? "border-red-300 bg-red-50"
-                  : "border-gray-300 bg-gray-50"
+                  ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20"
+                  : isDragActive
+                    ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900"
               }`}
             >
               {hasRemovedFile ? (
-                <X className="h-6 w-6 text-red-400" />
+                <X className="h-8 w-8 text-red-400 dark:text-red-500" />
+              ) : isDragActive ? (
+                <Upload className="h-8 w-8 text-blue-400 dark:text-blue-500 animate-pulse" />
               ) : (
-                <FileImage className="h-6 w-6 text-gray-400" />
+                <FileImage className="h-8 w-8 text-gray-400 dark:text-gray-500" />
               )}
             </div>
           )}
         </div>
 
-        <div {...getRootProps()} className="flex-1">
-          <input {...getInputProps()} />
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={disabled}
-                className="h-8"
-              >
-                <Upload className="h-3.5 w-3.5 mr-1.5" />
-                {hasRemovedFile
-                  ? "Add image"
-                  : showExistingImage
-                    ? "Replace Image"
-                    : "Choose Image"}
-              </Button>
+        {/* Upload Controls Area */}
+        <div className="flex-1 min-w-0">
+          <div {...getRootProps()} className="cursor-pointer">
+            <input {...getInputProps()} />
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={disabled}
+                  className="h-9 text-xs border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {hasRemovedFile
+                    ? "Add Image"
+                    : showExistingImage
+                      ? "Replace Image"
+                      : "Upload Image"}
+                </Button>
 
-              {hasNewFile && (
-                <span className="text-sm text-gray-600 truncate flex-1">
-                  {(value as File).name}
-                </span>
-              )}
-              {hasRemovedFile && (
-                <span className="text-sm text-blue-600 truncate flex-1">
-                  Image removed
-                </span>
-              )}
-              {showExistingImage && (
-                <span className="text-sm text-gray-500 truncate flex-1">
-                  Current image
-                </span>
-              )}
+                <div className="flex-1 min-w-0">
+                  {hasNewFile && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                        {(value as File).name}
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        ({(value as File).size / 1024 > 1024
+                        ? `${((value as File).size / 1024 / 1024).toFixed(1)} MB`
+                        : `${Math.round((value as File).size / 1024)} KB`})
+                      </span>
+                    </div>
+                  )}
+                  {hasRemovedFile && (
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />
+                      <span className="text-sm text-red-600 dark:text-red-400 truncate">
+                        Image will be removed
+                      </span>
+                    </div>
+                  )}
+                  {showExistingImage && (
+                    <div className="flex items-center gap-2">
+                      <FileImage className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                        Current image selected
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {hasRemovedFile
+                    ? "Image will be removed. Click to add a new image."
+                    : showExistingImage
+                      ? "Drag & drop or click to replace current image"
+                      : hasNewFile
+                        ? "Drag & drop or click to replace uploaded image"
+                        : "Drag & drop or click to upload an image"}
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">
+                  Supports: PNG, JPG, JPEG, GIF, WEBP • Max size: {maxSize / 1024 / 1024}MB
+                </p>
+              </div>
             </div>
-
-            <p className="text-xs text-gray-500">
-              {hasRemovedFile
-                ? "Image will be removed. Click to add a new image."
-                : showExistingImage
-                  ? "Click or drag to replace current image"
-                  : hasNewFile
-                    ? "Click or drag to replace"
-                    : "Click or drag to upload"}
-            </p>
           </div>
+
+          {error && (
+            <div className="mt-2 flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Drag Overlay */}
       {isDragActive && (
-        <div className="fixed inset-0 bg-blue-50 bg-opacity-90 border-2 border-dashed border-blue-400 flex items-center justify-center z-50">
-          <div className="text-center p-8 bg-white rounded-lg shadow-lg border">
-            <Upload className="h-10 w-10 text-blue-500 mx-auto mb-3" />
-            <p className="font-medium text-blue-900">
-              {showExistingImage
-                ? "Drop image to replace"
-                : "Drop image to upload"}
+        <div className="fixed inset-0 bg-blue-50/90 dark:bg-blue-900/30 backdrop-blur-sm border-4 border-dashed border-blue-400 dark:border-blue-500 flex items-center justify-center z-50">
+          <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-sm mx-4">
+            <div className="mx-auto w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-4">
+              <Upload className="h-10 w-10 text-blue-500 dark:text-blue-400 animate-bounce" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Drop your image here
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Release to upload the image
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Supports all common image formats
             </p>
           </div>
         </div>

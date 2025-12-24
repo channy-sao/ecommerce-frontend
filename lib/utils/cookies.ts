@@ -3,8 +3,7 @@
 import {cookies} from 'next/headers';
 import "server-only";
 import {COOKIE_KEYS} from "@/lib/constants/auth-constant";
-import { USER_INFO_KEY } from '@/providers/AuthProvider';
-import { UserResponse } from '@/lib/types/auth';
+import { UserResponse } from '@/lib/types/user';
 
 export async function setAuthCookies(access: string, accessMs: number, refresh: string, refreshMs: number) {
     const store = await cookies();

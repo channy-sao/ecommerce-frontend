@@ -89,7 +89,7 @@ export const columns: ColumnDef<ProductResponse>[] = [
       const productName = row.original.name;
 
       return (
-        <div className="w-12 h-12 rounded-md border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md overflow-hidden items-center justify-center">
           {imageUrl ? (
             <ImagePreviewDialog imageUrl={imageUrl} alt={productName}>
               <Image

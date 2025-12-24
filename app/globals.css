@@ -122,6 +122,9 @@
     --sidebar-menu-foreground: rgb(72, 132, 255);
     --sidebar-menu-hover: color-mix(in oklab, var(--color-white) 5%, transparent);
     --sidebar-menu-hover-foreground: oklch(0.922 0 0);
+    --bg-green-accent: #2bcd2b;
+    --bg-green-foreground: rgb(16, 25, 34);
+    --bg-green: rgb(16, 25, 34);
 }
 
 @layer base {
@@ -143,3 +146,19 @@
     }
 
 }
+
+/* shadcn switch cursor */
+button[role='switch'] {
+    @apply cursor-pointer;
+}
+
+/* shadcn switch - checked (ON) */
+button[role='switch'][data-state='checked'] {
+    @apply bg-blue-600;
+}
+
+/* switch thumb */
+button[role='switch'][data-state='checked'] > span {
+    @apply translate-x-5 bg-white;
+}
+

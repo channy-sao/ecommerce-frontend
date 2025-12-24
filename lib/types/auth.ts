@@ -1,6 +1,7 @@
 // types/auth.ts
 
 import { BaseResponse } from '@/lib/types/base-response';
+import { UserResponse } from '@/lib/types/user';
 
 export interface BaseAuthResponse {
   accessToken: string;
@@ -12,17 +13,6 @@ export interface BaseAuthResponse {
 
 export type RefreshTokenResponse = BaseAuthResponse;
 
-export interface UserResponse {
-  id: number;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  avatar?: string;
-  isActive: boolean;
-  roles: string[];
-  permissions: string[];
-}
 
 export interface LoginResponse extends BaseAuthResponse {
   userInfo?: UserResponse;

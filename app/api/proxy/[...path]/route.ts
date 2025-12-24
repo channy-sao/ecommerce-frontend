@@ -1,58 +1,72 @@
 // app/api/proxy/[...path]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { buildErrorResponse } from '@/lib/types/error-response';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8080';
 
 async function handleProxy(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   try {
-    // Await params here
     const { path } = await context.params;
 
     if (!path || path.length === 0) {
-      console.error('❌ Missing proxy path:', context.params);
-      return NextResponse.json({ error: 'Missing proxy path' }, { status: 400 });
+      return buildErrorResponse(
+        'Missing proxy path',
+        400,
+        `proxy-${Date.now()}`,
+        req.nextUrl.pathname
+      );
     }
 
     const targetUrl = `${BACKEND_URL}/${path.join('/')}${req.nextUrl.search}`;
-    console.log('➡ Proxying to:', targetUrl);
 
-    // Include body only for methods that can have it
-    const body = ['POST', 'PUT', 'PATCH'].includes(req.method!) ? await req.text() : undefined;
+    // Clone headers but remove problematic headers
+    const headers = new Headers(req.headers);
+    headers.delete('content-length');
+    headers.delete('host');
 
-    // Forward headers (you can add more if needed)
-    const headers: Record<string, string> = {};
-    req.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
-
-    const res = await fetch(targetUrl, {
+    // Prepare fetch options with proper typing
+    const fetchOptions: any = {
       method: req.method,
       headers,
-      body,
-    });
+    };
 
-    // Return response as text
-    const text = await res.text();
-    return new NextResponse(text, { status: res.status });
-  } catch (err: any) {
-    console.error('❌ Proxy failed:', err);
-    return NextResponse.json({ error: 'Proxy failed', message: err.message }, { status: 500 });
+    // Handle body for non-GET/HEAD requests
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      fetchOptions.body = req.body;
+
+      // ✅ REQUIRED for Node.js with streaming body
+      fetchOptions.duplex = 'half';
+    }
+
+    const res = await fetch(targetUrl, fetchOptions);
+
+    const contentType = res.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const data = await res.json();
+      return NextResponse.json(data, {
+        status: res.status,
+        headers: {
+          'X-Backend-Status': `${res.status}`,
+        },
+      });
+    }
+
+    return new NextResponse(res.body, {
+      status: res.status,
+      headers: res.headers,
+    });
+  } catch (error) {
+    console.error('❌ Proxy failed:', error);
+    return buildErrorResponse('Proxy failed', 500, `proxy-${Date.now()}`, req.nextUrl.pathname);
   }
 }
 
 // Export all HTTP methods
-export async function GET(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return handleProxy(req, ctx);
-}
-export async function POST(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return handleProxy(req, ctx);
-}
-export async function PUT(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return handleProxy(req, ctx);
-}
-export async function DELETE(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return handleProxy(req, ctx);
-}
-export async function PATCH(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  return handleProxy(req, ctx);
-}
+export const GET = handleProxy;
+export const POST = handleProxy;
+export const PUT = handleProxy;
+export const DELETE = handleProxy;
+export const PATCH = handleProxy;
+export const OPTIONS = handleProxy;
+export const HEAD = handleProxy;

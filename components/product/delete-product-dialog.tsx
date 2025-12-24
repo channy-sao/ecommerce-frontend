@@ -3,7 +3,7 @@
 
 import { ProductResponse } from "@/lib/types/product-response";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ProductApi } from "@/lib/api/product";
+import { ProductApi, PRODUCTS_QUERY_KEY } from '@/lib/api/product';
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
@@ -24,7 +24,7 @@ export function DeleteProductDialog({
     mutationFn: (id: number) => ProductApi.deleteProduct(id),
     onSuccess: () => {
       toast.success("Product deleted successfully");
-      void queryClient.invalidateQueries({ queryKey: ["products"] });
+      void queryClient.invalidateQueries({ queryKey: [PRODUCTS_QUERY_KEY] });
       onOpenChange(false);
     },
     onError: () => {

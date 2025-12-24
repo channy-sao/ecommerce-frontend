@@ -31,8 +31,9 @@ import {
   CreateCategoryValues,
 } from "@/lib/validators/category-schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CategoryAPI } from "@/lib/api/category";
-import { useState } from "react";
+import { CATEGORIES_QUERY_KEY, CategoryAPI } from '@/lib/api/category';
+import React, { useState } from "react";
+import { Sparkles } from 'lucide-react';
 
 type FormValues = z.infer<typeof createCategorySchema>;
 
@@ -54,7 +55,7 @@ export function CreateCategoryDialog() {
       toast.success("CategoryResponse created successfully.");
       form.reset();
       setOpen(false);
-      void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: [CATEGORIES_QUERY_KEY] });
     },
   });
 
@@ -77,7 +78,10 @@ export function CreateCategoryDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant={'custom'} size={'lg'}>Create New Category</Button>
+        <Button variant={'custom'} size={'lg'} className={'gap-2'}>
+          <Sparkles className="h-4 w-4" />
+          Create New Category
+        </Button>
       </DialogTrigger>
 
       <DialogContent onInteractOutside={handleInteractOutside}>

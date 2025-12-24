@@ -38,29 +38,26 @@ export function AppHeader() {
 
         <Breadcrumb>
           <BreadcrumbList>
-            {/* If no path → show Home */}
-            {segments.length === 0 && (
-              <BreadcrumbItem>
-                <BreadcrumbPage>Home</BreadcrumbPage>
-              </BreadcrumbItem>
-            )}
-
             {/* Dynamic breadcrumb generation */}
             {segments.map((seg, index) => {
               const href = "/" + segments.slice(0, index + 1).join("/");
-
               const isLast = index === segments.length - 1;
 
               return (
-                <BreadcrumbItem key={href}>
-                  {!isLast ? (
-                    <BreadcrumbLink href={href}>{format(seg)}</BreadcrumbLink>
-                  ) : (
-                    <BreadcrumbPage>{format(seg)}</BreadcrumbPage>
-                  )}
+                <React.Fragment key={href}>
+                  <BreadcrumbItem>
+                    {!isLast ? (
+                      <BreadcrumbLink href={href}>{format(seg)}</BreadcrumbLink>
+                    ) : (
+                      <BreadcrumbPage>{format(seg)}</BreadcrumbPage>
+                    )}
+                  </BreadcrumbItem>
 
-                  {!isLast && <BreadcrumbSeparator />}
-                </BreadcrumbItem>
+                  {/* Add separator after each item except the last one */}
+                  {!isLast && (
+                    <BreadcrumbSeparator />
+                  )}
+                </React.Fragment>
               );
             })}
           </BreadcrumbList>
