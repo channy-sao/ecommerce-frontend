@@ -1,7 +1,8 @@
 // types/auth.ts
 
 import { BaseResponse } from '@/lib/types/base-response';
-import { UserResponse } from '@/lib/types/user';
+import { UserInfo, UserResponse } from '@/lib/types/user';
+import { Permission, Role } from '@/lib/types/role';
 
 export interface BaseAuthResponse {
   accessToken: string;
@@ -19,7 +20,9 @@ export interface LoginResponse extends BaseAuthResponse {
 }
 
 export interface AuthContextType {
-  user: UserResponse | null ;
+  user: UserInfo | null ;
+  roles: Role[],
+  permissions: Permission[],
   isLoading: boolean;
   login: (credentials: { email: string; password: string, rememberMe : boolean}) => Promise<BaseResponse<LoginResponse>>;
   signOut: () => Promise<void>;

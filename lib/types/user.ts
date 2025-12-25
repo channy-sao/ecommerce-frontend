@@ -20,6 +20,17 @@ export interface UserResponse {
   permissions: Permission[];
 }
 
+export interface UserInfo {
+  id: number;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  phone?: string;
+  avatar?: string;
+  isActive: boolean;
+}
+
 export interface CreateUserRequest {
   email: string;
   password: string;
@@ -48,6 +59,25 @@ export interface UpdateUserResponse {
   profile?: File;
 }
 
+export interface AuditUser {
+  id: number;
+  fullName: string;
+}
+
 export interface AssignRoleToUserRequest {
   roleIds: number[];
+}
+
+
+export function mapToUserInfo(user: UserResponse): UserInfo {
+  return {
+    id: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    fullName: user.fullName,
+    phone: user.phone,
+    avatar: user.avatar,
+    isActive: user.isActive,
+  };
 }

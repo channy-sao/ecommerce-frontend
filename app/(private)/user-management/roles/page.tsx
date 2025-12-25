@@ -13,6 +13,8 @@ export default function RolesPage() {
   const { data } = useQuery<BaseResponse<Role[]>>({
     queryFn: () => RoleAPI.getRoles(),
     queryKey: [ROLES_QUERY_KEY],
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const roles = data?.data || [];

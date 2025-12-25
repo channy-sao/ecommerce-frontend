@@ -8,7 +8,6 @@ import { ProductListResponse, ProductResponse } from '@/lib/types/product-respon
 import { ProductApi, PRODUCTS_QUERY_KEY } from '@/lib/api/product';
 import { CreateProductDialog } from '@/components/product/create-product-dialog';
 import { useDebounce } from '@/hooks/use-debounce';
-import { toast } from 'sonner';
 
 export default function ProductPage() {
   const [pageIndex, setPageIndex] = useState(0); // 0-based
@@ -21,10 +20,9 @@ export default function ProductPage() {
     queryKey: [PRODUCTS_QUERY_KEY, pageIndex, pageSize, debouncedSearch],
     queryFn: () => ProductApi.filter(pageIndex + 1, pageSize, debouncedSearch), // in backend page start from 1
     // Option 2: Retry logic
-    retry: 2,
+    retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
-
 
   const products: ProductResponse[] = data?.data || [];
   const totalPages = data?.meta?.totalPage || 1;

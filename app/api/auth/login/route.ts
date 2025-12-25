@@ -4,7 +4,7 @@ import { buildErrorResponse } from '@/lib/types/error-response';
 import { COOKIE_KEYS } from '@/lib/constants/auth-constant';
 import { LoginResponse } from '@/lib/types/auth';
 import { BaseResponse } from '@/lib/types/base-response';
-import { USER_INFO_KEY } from '@/providers/AuthProvider';
+import { mapToUserInfo } from '@/lib/types/user';
 
 export async function POST(request: NextRequest) {
   console.log('=== LOGIN API START ===');
@@ -64,10 +64,14 @@ export async function POST(request: NextRequest) {
       maxAge: accessExpireInMs / 1000, // 15 minutes
     });
 
-    nextResponse.cookies.set('user_info', JSON.stringify(responseData.data.userInfo), {
-      ...cookieOptions,
-      maxAge: refreshExpireInMs / 1000,
-    });
+    nextResponse.cookies.set(
+      'user_info',
+      JSON.stringify(mapToUserInfo(responseData.data.userInfo!)),
+      {
+        ...cookieOptions,
+        maxAge: refreshExpireInMs / 1000,
+      }
+    );
 
     nextResponse.cookies.set(COOKIE_KEYS.REFRESH_TOKEN, refreshToken, {
       ...cookieOptions,

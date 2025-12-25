@@ -38,7 +38,7 @@ export function CategoryActionsCell({ category }: CategoryActionsCellProps) {
           <DropdownMenuItem onClick={() => setEditingCategory(category)}>
             Edit Category
           </DropdownMenuItem>
-          <DropdownMenuItem>View Category details</DropdownMenuItem>
+          <DropdownMenuItem>Category details</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

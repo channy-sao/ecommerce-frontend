@@ -3,7 +3,7 @@
 import {cookies} from 'next/headers';
 import "server-only";
 import {COOKIE_KEYS} from "@/lib/constants/auth-constant";
-import { UserResponse } from '@/lib/types/user';
+import { UserInfo, UserResponse } from '@/lib/types/user';
 
 export async function setAuthCookies(access: string, accessMs: number, refresh: string, refreshMs: number) {
     const store = await cookies();
@@ -46,7 +46,7 @@ export async function getInitialUser() {
   if (!session) return null;
 
   try {
-    return JSON.parse(session.value) as UserResponse;
+    return JSON.parse(session.value) as UserInfo;
   } catch {
     return null;
   }

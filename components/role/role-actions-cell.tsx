@@ -35,7 +35,7 @@ export function RoleActionsCell({ role }: RoleActionsCellProps) {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setEditRole(role)}>Edit Role</DropdownMenuItem>
-          <DropdownMenuItem>View Category details</DropdownMenuItem>
+          <DropdownMenuItem>Role details</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

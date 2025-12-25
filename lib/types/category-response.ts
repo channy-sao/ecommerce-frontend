@@ -1,13 +1,14 @@
 import { BaseResponse } from "@/lib/types/base-response";
+import { AuditUser } from '@/lib/types/user';
 
 export type CategoryResponse = {
   id: number;
   name: string;
   description: string;
   createdAt: string;
-  createdBy: string;
+  createdBy: AuditUser;
   updatedAt: string;
-  updatedBy: string;
+  updatedBy?: AuditUser;
   products: [];
 };
 

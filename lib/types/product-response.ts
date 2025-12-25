@@ -1,4 +1,5 @@
 import { BaseResponse } from "@/lib/types/base-response";
+import { AuditUser } from '@/lib/types/user';
 
 export interface ProductResponse {
   id: number;
@@ -11,8 +12,8 @@ export interface ProductResponse {
   isFeature: boolean;
   createdAt: string; // or Date if you want
   updatedAt: string; // or Date if you want
-  createdBy: number;
-  updatedBy: number;
+  createdBy: AuditUser;
+  updatedBy?: AuditUser;
 }
 
 export type ProductListResponse = BaseResponse<ProductResponse[]>;

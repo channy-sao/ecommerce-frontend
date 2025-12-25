@@ -1,31 +1,18 @@
-"use client";
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table";
-import { CategoryResponse } from "@/lib/types/category-response";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { EditCategoryDialog } from "@/components/category/edit-category-dialog";
-import { useState } from "react";
-import { CategoryActionsCell } from "@/components/category/category-actions-cell";
+import { ColumnDef } from '@tanstack/react-table';
+import { CategoryResponse } from '@/lib/types/category-response';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { CategoryActionsCell } from '@/components/category/category-actions-cell';
 
 export const columns: ColumnDef<CategoryResponse>[] = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -42,57 +29,49 @@ export const columns: ColumnDef<CategoryResponse>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
+    accessorKey: 'name',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
     enableSorting: true,
     enableGlobalFilter: true,
   },
   {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
-    ),
+    accessorKey: 'description',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original.description || "-"}
-      </span>
+      <span className="text-muted-foreground">{row.original.description || '-'}</span>
     ),
     enableGlobalFilter: true,
   },
   {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created by" />
+    accessorKey: 'createdBy',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Created by" />,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.createdBy?.fullName || '-'}</span>
     ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Created At" />,
     enableSorting: true,
   },
   {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created At" />
-    ),
+    accessorKey: 'updatedBy',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Updated By" />,
     enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.updatedBy?.fullName || '-'}</span>
+    ),
   },
   {
-    accessorKey: "updatedBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated By" />
-    ),
+    accessorKey: 'updatedAt',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Updated At" />,
     enableSorting: true,
+    cell: ({ row }) => row.original.updatedAt || '-',
   },
   {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated At" />
-    ),
-    enableSorting: true,
-    cell: ({ row }) => row.original.updatedAt || "-",
-  },
-  {
-    id: "actions",
+    id: 'actions',
     cell: ({ row }) => {
       const category = row.original;
       return <CategoryActionsCell category={category} />;

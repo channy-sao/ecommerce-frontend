@@ -1,5 +1,5 @@
 // lib/utils/user-utils.ts
-import { UserResponse } from '@/lib/types/auth';
+import { UserResponse } from '@/lib/types/user';
 
 // Get user initials for avatar fallback
 export const getUserInitials = (user?: UserResponse | null): string => {
@@ -54,9 +54,7 @@ export function getAvatarColor(name: string) {
 
 export function getTextColor(bgColor: string) {
   const lightBackgrounds = ['bg-yellow-500', 'bg-cyan-500', 'bg-teal-500'];
-  return lightBackgrounds.includes(bgColor)
-    ? 'text-gray-900'
-    : 'text-white';
+  return lightBackgrounds.includes(bgColor) ? 'text-gray-900' : 'text-white';
 }
 
 // 🎯 NEW: Check if user data is complete

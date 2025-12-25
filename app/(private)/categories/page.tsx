@@ -22,11 +22,13 @@ export default function CategoryPage() {
   const { data } = useQuery<CategoryListResponse>({
     queryKey: [CATEGORIES_QUERY_KEY, pageIndex, pageSize, debouncedSearch],
     queryFn: () => CategoryAPI.filter(pageIndex + 1, pageSize, debouncedSearch), // in backend page start from 1
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const categories: CategoryResponse[] = data?.data || [];
-  const totalPages = data?.meta.totalPage || 1;
-  const totalRecords = data?.meta.totalCount || 0; // Add this line
+  const totalPages = data?.meta?.totalPage || 1;
+  const totalRecords = data?.meta?.totalCount || 0; // Add this line
 
   return (
     <div className="p-6 space-y-2 bg-card rounded-2xl border-gray-200 border dark:border-gray-800 border-[0.3px]">

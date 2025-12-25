@@ -1,14 +1,11 @@
 import { getAccessToken } from '@/lib/utils/cookies';
 import { refreshAccessToken } from '@/lib/utils/refresh';
+import { ApiError } from '@/lib/http';
 
 class ApiClient {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  async fetchWithAuth(
-    endpoint: string,
-    options: RequestInit = {},
-    retry = true
-  ) {
+  async fetchWithAuth(endpoint: string, options: RequestInit = {}, retry = true) {
     const token = await getAccessToken();
     const isFormData = options.body instanceof FormData;
 
@@ -37,25 +34,27 @@ class ApiClient {
       }
 
       // Refresh failed → logout required
-      throw {
-        status: 401,
-        message: 'Session expired',
-      };
+      throw new ApiError('Session expired', 401);
     }
 
     let data;
     try {
       data = await res.json();
     } catch {
-      throw new Error('Invalid server response');
+      throw new ApiError('Invalid server response', res.status);
     }
 
-    // Only throw for REAL system failures
+    // 🔥 IMPORTANT PART — BUSINESS ERROR
+    if (data?.success === false) {
+      throw new ApiError(
+        data?.status?.message || 'Request failed',
+        data?.status?.code || res.status
+      );
+    }
+
+    // 🔥 SYSTEM ERROR (5xx)
     if (!res.ok && res.status >= 500) {
-      throw {
-        status: res.status,
-        message: data?.status?.message || 'Server error',
-      };
+      throw new ApiError(data?.status?.message || 'Server error', res.status);
     }
 
     return data;

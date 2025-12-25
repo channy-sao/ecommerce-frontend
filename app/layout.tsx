@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Poppins } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { QueryProvider } from '@/providers/QueryProvider';
@@ -13,7 +13,7 @@ const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-sans',
   display: 'swap',
-})
+});
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',

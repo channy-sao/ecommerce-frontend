@@ -52,7 +52,9 @@ export const UserAPI = {
 
     // Append each field to FormData
     formData.append('email', user.email);
-    formData.append('password', user.password);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    formData.append('password', user?.password);
     formData.append('firstName', user.firstName ?? '');
     formData.append('lastName', user.lastName ?? '');
     formData.append('phone', user.phone ?? '');
