@@ -110,8 +110,8 @@ export function CreateProductDialog() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="w-[90vw] max-w-lg max-h-[90vh] overflow-y-auto overflow-x-hidden">
+      <DialogHeader>
           <DialogTitle>New Product</DialogTitle>
         </DialogHeader>
 
@@ -158,7 +158,7 @@ export function CreateProductDialog() {
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Images</FormLabel>
+                  <FormLabel>Product Image</FormLabel>
                   <FormControl>
                     <ImageUpload
                       value={field.value}

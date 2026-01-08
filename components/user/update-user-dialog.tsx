@@ -82,7 +82,7 @@ export function UpdateUserDialog({ open, onOpenChange, user }: UpdateUserDialogP
     },
     onError: (error: any) => {
       toast.error('Update failed', {
-        description: error.response?.data?.message || 'Please try again later.',
+        description: error.message || 'Please try again later.',
       });
     },
   });

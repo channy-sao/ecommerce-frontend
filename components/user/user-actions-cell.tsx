@@ -72,7 +72,7 @@ export function UserActionsCell({ user }: UserActionsCellProps) {
     },
     onError: (error) => {
       console.error(error);
-      toast.error('Failed to delete user');
+      toast.error('Failed to update status of user');
     },
   });
 

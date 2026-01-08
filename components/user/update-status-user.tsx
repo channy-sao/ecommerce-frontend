@@ -31,7 +31,7 @@ export default function UpdateStatusUser({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleStatusChange}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={handleStatusChange} variant = {'custom'}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

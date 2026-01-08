@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Button } from "@/components/ui/button";
-import { X, Upload, FileImage, CheckCircle, AlertCircle } from "lucide-react";
-import Image from "next/image";
+import { useCallback, useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Button } from '@/components/ui/button';
+import { X, Upload, FileImage, CheckCircle, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 
 interface ImageUploadProps {
   value?: File | null | undefined;
@@ -17,16 +17,15 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({
-                              value = undefined,
-                              onChange,
-                              existingImageUrl = null,
-                              maxSize = 5 * 1024 * 1024,
-                              disabled = false,
-                              label = "Product Image",
-                              description = "Upload a high-quality image for your product",
-                            }: ImageUploadProps) {
-  const [preview, setPreview] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  value = undefined,
+  onChange,
+  existingImageUrl = null,
+  maxSize = 5 * 1024 * 1024,
+  disabled = false,
+  description = 'Upload a high-quality image for your product',
+}: ImageUploadProps) {
+  const [preview, setPreview] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
   // When value changes to a File, create preview URL
   useEffect(() => {
@@ -40,7 +39,7 @@ export function ImageUpload({
       // Clear preview if not a File
       if (preview) {
         URL.revokeObjectURL(preview);
-        setPreview("");
+        setPreview('');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,14 +54,14 @@ export function ImageUpload({
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: any[]) => {
-      setError("");
+      setError('');
 
       if (rejectedFiles.length > 0) {
         const rejection = rejectedFiles[0];
-        if (rejection.errors[0]?.code === "file-too-large") {
+        if (rejection.errors[0]?.code === 'file-too-large') {
           setError(`File is too large. Maximum size is ${maxSize / 1024 / 1024}MB`);
         } else {
-          setError(rejection.errors[0]?.message || "Invalid file type");
+          setError(rejection.errors[0]?.message || 'Invalid file type');
         }
         return;
       }
@@ -72,12 +71,12 @@ export function ImageUpload({
         onChange(file);
       }
     },
-    [onChange, maxSize],
+    [onChange, maxSize]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"] },
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] },
     maxSize,
     maxFiles: 1,
     multiple: false,
@@ -85,28 +84,17 @@ export function ImageUpload({
   });
 
   const removeFile = () => {
-    setError("");
+    setError('');
     onChange(null);
   };
 
   // Image src determination
-  const imageSrc = showNewFile
-    ? preview
-    : showExistingImage
-      ? (existingImageUrl ?? "")
-      : "";
+  const imageSrc = showNewFile ? preview : showExistingImage ? (existingImageUrl ?? '') : '';
 
   return (
     <div className="space-y-4">
       <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {label}
-        </label>
-        {description && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {description}
-          </p>
-        )}
+        {description && <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>}
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
@@ -122,9 +110,8 @@ export function ImageUpload({
                   alt="New upload"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    console.error("Failed to load image:", imageSrc);
-                    (e.currentTarget as HTMLImageElement).style.display =
-                      "none";
+                    console.error('Failed to load image:', imageSrc);
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
                   }}
                 />
               </div>
@@ -150,9 +137,8 @@ export function ImageUpload({
                   alt="Current product"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    console.error("Failed to load image:", imageSrc);
-                    (e.currentTarget as HTMLImageElement).style.display =
-                      "none";
+                    console.error('Failed to load image:', imageSrc);
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
                   }}
                 />
               </div>
@@ -174,15 +160,13 @@ export function ImageUpload({
             <div
               className={`w-20 h-20 rounded-lg border-2 border-dashed flex items-center justify-center transition-colors ${
                 hasRemovedFile
-                  ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20"
+                  ? ''
                   : isDragActive
-                    ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900"
+                    ? 'border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                    : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900'
               }`}
             >
-              {hasRemovedFile ? (
-                <X className="h-8 w-8 text-red-400 dark:text-red-500" />
-              ) : isDragActive ? (
+              {isDragActive ? (
                 <Upload className="h-8 w-8 text-blue-400 dark:text-blue-500 animate-pulse" />
               ) : (
                 <FileImage className="h-8 w-8 text-gray-400 dark:text-gray-500" />
@@ -206,34 +190,36 @@ export function ImageUpload({
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   {hasRemovedFile
-                    ? "Add Image"
+                    ? 'Add Image'
                     : showExistingImage
-                      ? "Replace Image"
-                      : "Upload Image"}
+                      ? 'Replace Image'
+                      : 'Upload Image'}
                 </Button>
 
                 <div className="flex-1 min-w-0">
                   {hasNewFile && (
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                      <span className="text-xs text-gray-700 dark:text-gray-300 truncate">
                         {(value as File).name}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        ({(value as File).size / 1024 > 1024
-                        ? `${((value as File).size / 1024 / 1024).toFixed(1)} MB`
-                        : `${Math.round((value as File).size / 1024)} KB`})
+                        (
+                        {(value as File).size / 1024 > 1024
+                          ? `${((value as File).size / 1024 / 1024).toFixed(1)} MB`
+                          : `${Math.round((value as File).size / 1024)} KB`}
+                        )
                       </span>
                     </div>
                   )}
-                  {hasRemovedFile && (
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />
-                      <span className="text-sm text-red-600 dark:text-red-400 truncate">
-                        Image will be removed
-                      </span>
-                    </div>
-                  )}
+                  {/*{hasRemovedFile && (*/}
+                  {/*  <div className="flex items-center gap-2">*/}
+                  {/*    <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />*/}
+                  {/*    <span className="text-sm text-red-600 dark:text-red-400 truncate">*/}
+                  {/*      Image will be removed*/}
+                  {/*    </span>*/}
+                  {/*  </div>*/}
+                  {/*)}*/}
                   {showExistingImage && (
                     <div className="flex items-center gap-2">
                       <FileImage className="h-4 w-4 text-gray-400 dark:text-gray-500" />
@@ -248,12 +234,12 @@ export function ImageUpload({
               <div className="space-y-1">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {hasRemovedFile
-                    ? "Image will be removed. Click to add a new image."
+                    ? 'Image will be removed. Click to add a new image.'
                     : showExistingImage
-                      ? "Drag & drop or click to replace current image"
+                      ? 'Drag & drop or click to replace current image'
                       : hasNewFile
-                        ? "Drag & drop or click to replace uploaded image"
-                        : "Drag & drop or click to upload an image"}
+                        ? 'Drag & drop or click to replace uploaded image'
+                        : 'Drag & drop or click to upload an image'}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500">
                   Supports: PNG, JPG, JPEG, GIF, WEBP • Max size: {maxSize / 1024 / 1024}MB
@@ -281,9 +267,7 @@ export function ImageUpload({
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Drop your image here
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Release to upload the image
-            </p>
+            <p className="text-gray-600 dark:text-gray-300">Release to upload the image</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               Supports all common image formats
             </p>

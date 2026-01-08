@@ -72,6 +72,7 @@ export const columns: ColumnDef<CategoryResponse>[] = [
   },
   {
     id: 'actions',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Action" />,
     cell: ({ row }) => {
       const category = row.original;
       return <CategoryActionsCell category={category} />;

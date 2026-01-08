@@ -1,7 +1,7 @@
 // components/products/products-actions-cell.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,27 +9,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
-import { ProductResponse } from "@/lib/types/product-response";
-import { EditProductDialog } from "@/components/product/edit-product-dialog";
-import { DeleteProductDialog } from "@/components/product/delete-product-dialog";
-import DetailProductDialog from "@/components/product/detail-product-dialog";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { MoreHorizontal } from 'lucide-react';
+import { ProductResponse } from '@/lib/types/product-response';
+import { EditProductDialog } from '@/components/product/edit-product-dialog';
+import { DeleteProductDialog } from '@/components/product/delete-product-dialog';
+import DetailProductDialog from '@/components/product/detail-product-dialog';
 
 interface ProductActionsCellProps {
   product: ProductResponse;
 }
 
 export function ProductActionsCell({ product }: ProductActionsCellProps) {
-  const [editingProduct, setEditingProduct] = useState<ProductResponse | null>(
-    null,
-  );
-  const [deletingProduct, setDeletingProduct] =
-    useState<ProductResponse | null>(null);
-  const [detailProduct, setDetailProduct] = useState<ProductResponse | null>(
-    null,
-  );
+  const [editingProduct, setEditingProduct] = useState<ProductResponse | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState<ProductResponse | null>(null);
+  const [detailProduct, setDetailProduct] = useState<ProductResponse | null>(null);
 
   return (
     <>
@@ -43,23 +38,14 @@ export function ProductActionsCell({ product }: ProductActionsCellProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="flex items-center gap-2"
-            onClick={() => setEditingProduct(product)}
-          >
-            <Edit className="h-4 w-4" /> Edit Product
+          <DropdownMenuItem variant={'custom-blue'} onClick={() => setEditingProduct(product)}>
+            Edit Product
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setDeletingProduct(product)}
-            className="flex items-center gap-2 text-red-600"
-          >
-            <Trash className="h-4 w-4" /> Delete Product
+          <DropdownMenuItem onClick={() => setDeletingProduct(product)} variant={'custom-blue'}>
+            Delete Product
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="flex items-center gap-2"
-            onClick={() => setDetailProduct(product)}
-          >
-            <Eye className="h-4 w-4" /> Product details
+          <DropdownMenuItem variant={'custom-blue'} onClick={() => setDetailProduct(product)}>
+            Product details
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

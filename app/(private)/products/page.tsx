@@ -41,7 +41,7 @@ export default function ProductPage() {
           columns={columns}
           data={products}
           pageCount={totalPages}
-          hiddenColumns={['createdAt', 'createdBy', 'updatedAt', 'updatedBy']}
+          hiddenColumns={['createdAt', 'updatedAt']}
           pageIndex={pageIndex}
           pageSize={pageSize}
           totalRecord={totalRecords}

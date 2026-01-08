@@ -1,21 +1,20 @@
-"use client";
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { ProductResponse } from "@/lib/types/product-response";
-import Image from "next/image";
-import { ProductActionsCell } from "@/components/product/product-actions-cell";
-import { ImagePreviewDialog } from "@/components/ui/image-preview-dialog";
+import { ColumnDef } from '@tanstack/react-table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { ProductResponse } from '@/lib/types/product-response';
+import Image from 'next/image';
+import { ProductActionsCell } from '@/components/product/product-actions-cell';
+import { ImagePreviewDialog } from '@/components/ui/image-preview-dialog';
 
 export const columns: ColumnDef<ProductResponse>[] = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -32,58 +31,8 @@ export const columns: ColumnDef<ProductResponse>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
-    enableSorting: true,
-    enableGlobalFilter: true,
-  },
-  {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
-    ),
-    enableSorting: true,
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original.description || "-"}
-      </span>
-    ),
-    enableGlobalFilter: true,
-  },
-  {
-    accessorKey: "price",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Price" />
-    ),
-    enableSorting: true,
-    cell: ({ row }) => {
-      const value = row.original.price;
-      return <span className="font-semibold text-foreground">${value}</span>;
-    },
-    enableGlobalFilter: true,
-  },
-  {
-    accessorKey: "categoryName",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
-    ),
-    enableSorting: true,
-    enableGlobalFilter: true,
-  },
-
-  {
-    accessorKey: "isFeature",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Featured" />
-    ),
-    enableSorting: true,
-    enableGlobalFilter: true,
-  },
-  {
-    accessorKey: "image",
-    header: "Picture",
+    accessorKey: 'image',
+    header: 'Picture',
     cell: ({ row }) => {
       const imageUrl = row.original.image;
       const productName = row.original.name;
@@ -108,39 +57,75 @@ export const columns: ColumnDef<ProductResponse>[] = [
     },
     enableSorting: false,
   },
+  {
+    accessorKey: 'name',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+    enableSorting: true,
+    enableGlobalFilter: true,
+  },
+  {
+    accessorKey: 'description',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.description || '-'}</span>
+    ),
+    enableGlobalFilter: true,
+  },
+  {
+    accessorKey: 'price',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Price" />,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const value = row.original.price;
+      return <span className="font-semibold text-foreground">${value}</span>;
+    },
+    enableGlobalFilter: true,
+  },
+  {
+    accessorKey: 'categoryName',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Category" />,
+    enableSorting: true,
+    enableGlobalFilter: true,
+  },
 
   {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created by" />
+    accessorKey: 'isFeature',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Featured" />,
+    enableSorting: true,
+    enableGlobalFilter: true,
+  },
+  {
+    accessorKey: 'createdBy',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Created by" />,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.createdBy?.fullName || '-'}</span>
     ),
     enableSorting: true,
     enableHiding: true,
   },
   {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created At" />
-    ),
+    accessorKey: 'createdAt',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Created At" />,
     enableSorting: true,
   },
   {
-    accessorKey: "updatedBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated By" />
-    ),
+    accessorKey: 'updatedBy',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Updated By" />,
     enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.updatedBy?.fullName || '-'}</span>
+    ),
   },
   {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated At" />
-    ),
+    accessorKey: 'updatedAt',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Updated At" />,
     enableSorting: true,
-    cell: ({ row }) => row.original.updatedAt || "-",
+    cell: ({ row }) => row.original.updatedAt || '-',
   },
   {
-    id: "actions",
+    id: 'actions',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Action" />,
     cell: ({ row }) => {
       const productResponse = row.original;
 
